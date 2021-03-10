@@ -1,0 +1,3 @@
+com.yugabyte.jdbc.dialect.GenericDatabaseDialect$Provider
+com.yugabyte.jdbc.dialect.SqliteDatabaseDialect$Provider
+com.yugabyte.jdbc.dialect.PostgreSqlDatabaseDialect$Provider

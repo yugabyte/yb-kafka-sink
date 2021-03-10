@@ -15,20 +15,34 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
+    The following only applies to changes made to this file as part of YugaByte development.
+
+         Portions Copyright (c) Yugabyte, Inc.
+
+      Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+      except in compliance with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software distributed under the
+      License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+      either express or implied.  See the License for the specific language governing permissions
+      and limitations under the License.
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.datastax.oss</groupId>
-  <artifactId>kafka-connect-cassandra-sink-parent</artifactId>
+  <groupId>com.yugabyte</groupId>
+  <artifactId>kafka-connect-yugabytedb-sink-parent</artifactId>
   <packaging>pom</packaging>
   <version>1.4.1-SNAPSHOT</version>
-  <name>DataStax Apache Cassandra (R) Kafka Sink Connector</name>
-  <description>A Kafka Sink Connector for pulling data from Apache Kafka and inserting into Apache Cassandra (R) or DataStax Enterprise (DSE)</description>
+  <name>YugabyteDB Kafka Sink Connector</name>
+  <description>A Kafka Sink Connector for pulling data from Apache Kafka and inserting into YugabyteDB</description>
   <url>https://github.com/riptano/kafka-sink</url>
   <inceptionYear>2018</inceptionYear>
   <organization>
-    <name>DataStax</name>
-    <url>http://www.datastax.com</url>
+    <name>YugabyteDB</name>
+    <url>http://www.yugabyte.com</url>
   </organization>
   <modules>
     <module>sink</module>
@@ -43,7 +57,9 @@
     <kafka.connect.version>2.4.0</kafka.connect.version>
     <confluent.version>5.2.1</confluent.version>
     <caffeine.version>2.6.2</caffeine.version>
-    <oss.driver.version>4.6.0</oss.driver.version>
+    <oss.driver.version>
+      <!--4.6.0-->4.6.0-yb-6
+    </oss.driver.version>
     <dsbulk.version>1.6.0</dsbulk.version>
     <reactive-streams.version>1.0.3</reactive-streams.version>
     <guava.version>25.1-jre</guava.version>
@@ -68,11 +84,16 @@
     <snappy.version>1.1.7.2</snappy.version>
     <jackson.version>2.10.0</jackson.version>
     <jackson-databind.version>2.10.0</jackson-databind.version>
+    <testcontainers.version>1.15.2</testcontainers.version>
+    <rest.assured.version>4.3.0</rest.assured.version>
+    <confluent.version>5.3.1</confluent.version>
+    <avro.version>1.9.2</avro.version>
+    <postgresql.version>42.2.12</postgresql.version>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>messaging-connectors-commons-core</artifactId>
         <version>${messaging.connectors.commons.version}</version>
       </dependency>
@@ -87,27 +108,27 @@
         <version>${kafka.connect.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
-        <artifactId>kafka-connect-cassandra-sink</artifactId>
+        <groupId>com.yugabyte</groupId>
+        <artifactId>kafka-connect-yugabytedb-sink</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>dsbulk-codecs-api</artifactId>
         <version>${dsbulk.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>dsbulk-codecs-text</artifactId>
         <version>${dsbulk.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>dsbulk-codecs-jdk</artifactId>
         <version>${dsbulk.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>dsbulk-sampler</artifactId>
         <version>${dsbulk.version}</version>
       </dependency>
@@ -172,7 +193,7 @@
         <version>${logback.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>java-driver-core</artifactId>
         <version>${oss.driver.version}</version>
       </dependency>
@@ -242,12 +263,12 @@
         <version>${wiremock-junit.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>java-driver-test-infra</artifactId>
         <version>${oss.driver.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>com.yugabyte</groupId>
         <artifactId>dsbulk-tests</artifactId>
         <version>${dsbulk.version}</version>
       </dependency>
@@ -255,6 +276,12 @@
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-annotations</artifactId>
         <version>3.1.12</version>
+      </dependency>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
+        <!--<scope>runtime</scope>-->
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -299,7 +326,7 @@
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
-        <plugin>
+        <!--<plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <version>3.0</version>
@@ -341,7 +368,7 @@ limitations under the License.]]></inlineHeader>
               </goals>
             </execution>
           </executions>
-        </plugin>
+        </plugin>-->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
@@ -694,6 +721,7 @@ limitations under the License.]]></inlineHeader>
       </build>
     </profile>
   </profiles>
+  <!-- need to change the repos here -->
   <repositories>
     <repository>
       <id>datastax-releases-local</id>
@@ -739,6 +767,7 @@ limitations under the License.]]></inlineHeader>
     </license>
   </licenses>
   <scm>
+    <!-- change it with our repo address -->
     <connection>scm:git:git@github.com:riptano/kafka-sink.git</connection>
     <developerConnection>scm:git:git@github.com:riptano/kafka-sink.git</developerConnection>
     <url>https://github.com/riptano/kafka-sink</url>
@@ -747,7 +776,7 @@ limitations under the License.]]></inlineHeader>
   <developers>
     <developer>
       <name>Various</name>
-      <organization>DataStax</organization>
+      <organization>YugabyteDB</organization>
     </developer>
   </developers>
 </project>
