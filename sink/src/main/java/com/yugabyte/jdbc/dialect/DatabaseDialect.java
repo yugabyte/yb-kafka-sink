@@ -87,11 +87,6 @@ import org.apache.kafka.connect.sink.SinkRecord;
  *       once.
  * </ol>
  *
- * <p>This functional approach is less common with Java 7 because it requires create lots of
- * anonymous implementations and is therefore more verbose. However, the same approach is far more
- * common in Java 8 and using lambdas requires very little code. This will make it easy to convert
- * to Java 8 in the near future.
- *
  * <h2>Packaging and Deploying</h2>
  *
  * The dialect framework uses Java's {@link java.util.ServiceLoader} mechanism to find and
@@ -164,6 +159,7 @@ public interface DatabaseDialect extends ConnectionProvider {
    * @param cal calendar
    * @return the current time at the database
    * @throws SQLException if there is an error with the database connection
+   * @throws ConnectException if there is any other error accessing the database
    */
   Timestamp currentTimeOnDB(Connection connection, Calendar cal)
       throws SQLException, ConnectException;

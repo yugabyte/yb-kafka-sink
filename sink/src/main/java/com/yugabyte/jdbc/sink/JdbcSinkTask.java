@@ -47,11 +47,6 @@ public class JdbcSinkTask extends SinkTask {
   }
 
   void initWriter() {
-    /*if (config.dialectName != null && !config.dialectName.trim().isEmpty()) {
-      dialect = DatabaseDialects.create(config.dialectName, config);
-    } else {
-      dialect = DatabaseDialects.findBestFor(config.connectionUrl, config);
-    }*/
     dialect = DatabaseDialects.create("PostgreSqlDatabaseDialect", config);
     final DbStructure dbStructure = new DbStructure(dialect);
     log.info("Initializing writer using SQL dialect: {}", dialect.getClass().getSimpleName());
@@ -73,7 +68,16 @@ public class JdbcSinkTask extends SinkTask {
         first.kafkaPartition(),
         first.kafkaOffset());
     try {
+      long start = System.currentTimeMillis();
       writer.write(records);
+      long end = System.currentTimeMillis();
+      log.info(
+          "The total time taken to write the batch({}-{}-{}) is : {} ms",
+          first.topic(),
+          first.kafkaPartition(),
+          first.kafkaOffset(),
+          (end - start));
+
     } catch (SQLException sqle) {
       log.warn(
           "Write of {} records failed, remainingRetries={}",

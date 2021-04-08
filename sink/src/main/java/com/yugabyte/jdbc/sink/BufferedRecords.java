@@ -148,7 +148,10 @@ public class BufferedRecords {
     records.add(record);
 
     if (records.size() >= config.batchSize) {
+      long start = System.currentTimeMillis();
       flushed.addAll(flush());
+      long end = System.currentTimeMillis();
+      log.info("The flush of batch size {} took {} ms", config.batchSize, (end - start));
     }
     return flushed;
   }

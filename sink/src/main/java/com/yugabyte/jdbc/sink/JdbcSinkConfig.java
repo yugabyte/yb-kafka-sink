@@ -44,9 +44,6 @@ public class JdbcSinkConfig extends AbstractConfig {
       Collections.unmodifiableList(
           Arrays.asList("__connect_topic", "__connect_partition", "__connect_offset"));
 
-  /*public static final String CONNECTION_URL = JdbcSourceConnectorConfig.CONNECTION_URL_CONFIG;
-  private static final String CONNECTION_URL_DOC =
-      "JDBC connection URL.\n" + "For example: ``jdbc:postgresql://127.0.0.1:5433/yugabyte``";*/
   public static final String CONNECTION_URLS = JdbcSourceConnectorConfig.CONNECTION_URLS_CONFIG;
   private static final String CONNECTION_URLS_DOC =
       "JDBC connection URL.\n"

@@ -76,11 +76,6 @@ public class GenericDatabaseDialect implements DatabaseDialect {
 
   private static final Logger glog = LoggerFactory.getLogger(GenericDatabaseDialect.class);
 
-  // This field was originally used by subclasses but resulted in incorrect namespaces in
-  // log files. Subclasses are now strongly encouraged to instantiate their own logger, using
-  // their own class. This field is only kept now to avoid breaking backwards compatibility for
-  // existing dialects that may rely on it.
-  @Deprecated protected final Logger log = LoggerFactory.getLogger(GenericDatabaseDialect.class);
   protected final AbstractConfig config;
 
   /** Whether to map {@code NUMERIC} JDBC types by precision. */
@@ -89,8 +84,6 @@ public class GenericDatabaseDialect implements DatabaseDialect {
   protected String catalogPattern;
   protected final String schemaPattern;
   protected final Set<String> tableTypes;
-  // protected final String jdbcUrl;
-  // protected final DatabaseDialectProvider.JdbcUrlInfo jdbcUrlInfo;
   protected final Set<String> jdbcUrls;
   protected final Set<DatabaseDialectProvider.JdbcUrlInfo> jdbcUrlInfos;
   private final QuoteMethod quoteSqlIdentifiers;
@@ -248,7 +241,7 @@ public class GenericDatabaseDialect implements DatabaseDialect {
     return "SELECT 1";
   }
 
-  protected JdbcDriverInfo jdbcDriverInfo() {
+  protected JdbcDriverInfo jdbcDriverInfo() throws ConnectException {
     if (jdbcDriverInfo == null) {
       try (Connection connection = getConnection()) {
         jdbcDriverInfo = createJdbcDriverInfo(connection);
@@ -764,9 +757,6 @@ public class GenericDatabaseDialect implements DatabaseDialect {
             .getTables(
                 tableId.catalogName(), tableId.schemaName(), tableId.tableName(), tableTypes)) {
       if (rs.next()) {
-        // final String catalogName = rs.getString(1);
-        // final String schemaName = rs.getString(2);
-        // final String tableName = rs.getString(3);
         final String tableType = rs.getString(4);
         try {
           return TableType.get(tableType);
