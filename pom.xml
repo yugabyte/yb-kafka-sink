@@ -726,7 +726,7 @@ limitations under the License.]]></inlineHeader>
     <repository>
       <id>Confluent</id>
       <name>Confluent</name>
-      <url>http://packages.confluent.io/maven/</url>
+      <url>https://packages.confluent.io/maven/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
