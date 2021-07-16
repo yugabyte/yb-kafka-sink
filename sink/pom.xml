@@ -227,6 +227,12 @@
       <artifactId>kafka-streams-avro-serde</artifactId>
       <version>${confluent.version}</version>
     </dependency>
+    <!-- CDC Source -->
+    <dependency>
+      <groupId>org.yb</groupId>
+      <artifactId>yb-client</artifactId>
+      <version>0.8.3-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
