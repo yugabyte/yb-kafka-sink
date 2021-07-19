@@ -97,7 +97,7 @@ public class CDCSourceTask extends SourceTask {
     SchemaAndValueProducer valueSchemaAndValueProducer =
             SchemaAndValueProducers.createValueSchemaAndValueProvider(sourceConfig);*/
 
-      while (running.get()) {
+    while (running.get()) {
       int index = 0;
       for (String id : tabletIds) {
         HostAndPort hp = hostAndPorts.get(index);
@@ -125,8 +125,22 @@ public class CDCSourceTask extends SourceTask {
     for (org.yb.cdc.CdcService.CDCRecordPB record : getChangesResponse.getResp().getRecordsList()) {
       // convert to SourceRecord
       // recordList.add(record);
-      log.info("SKSK the source record is " + record.toString());
+      List<CdcService.KeyValuePairPB> primary_keys = record.getKeyList();
+      List<CdcService.KeyValuePairPB> changes = record.getChangesList();
+
+      primary_keys.forEach(
+          x -> {
+            log.info("SKSK the source record key is " + x.getKey() + " " + x.getValue());
+          });
+
+      changes.forEach(
+          x -> {
+            log.info("SKSK the source record is " + x.getKey() + " " + x.getValue());
+          });
     }
+
+    // convert and add to recordList
+
     this.term = getChangesResponse.getResp().getCheckpoint().getOpId().getTerm();
     this.index = getChangesResponse.getResp().getCheckpoint().getOpId().getIndex();
     return null;
