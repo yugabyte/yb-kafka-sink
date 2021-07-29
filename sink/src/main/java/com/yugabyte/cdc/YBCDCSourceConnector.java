@@ -3,7 +3,6 @@ package com.yugabyte.cdc;
 import com.google.common.net.HostAndPort;
 import com.yugabyte.jdbc.dialect.DatabaseDialect;
 import com.yugabyte.jdbc.util.CachedConnectionProvider;
-import com.yugabyte.jdbc.util.ExpressionBuilder;
 import com.yugabyte.jdbc.util.Version;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -53,7 +52,7 @@ public class YBCDCSourceConnector extends SourceConnector {
 
     client =
         new AsyncYBClient.AsyncYBClientBuilder(
-                config.getString(CDCSourceConnectorConfig.MASTER_ADDRESS_DEFAULT))
+                config.getString(CDCSourceConnectorConfig.MASTER_ADDRESS_CONFIG))
             .defaultAdminOperationTimeoutMs(DEFAULT_TIMEOUT)
             .defaultOperationTimeoutMs(DEFAULT_TIMEOUT)
             .defaultSocketReadTimeoutMs(DEFAULT_TIMEOUT)
@@ -64,12 +63,15 @@ public class YBCDCSourceConnector extends SourceConnector {
     String tableName = config.getString(CDCSourceConnectorConfig.TABLE_NAME_CONFIG);
     String namespaceName = config.getString(CDCSourceConnectorConfig.NAMESPACE_NAME_CONFIG);
 
+    log.info("The table name is " + tableName);
+    log.info("The namespace name is " + namespaceName);
     // get all the tables and then tablets
     String tableId = null;
     ListTablesResponse tablesResp = null;
     try {
       tablesResp = syncClient.getTablesList();
       for (Master.ListTablesResponsePB.TableInfo tableInfo : tablesResp.getTableInfoList()) {
+        log.info("The tables are " + tableInfo.getName());
         if (tableInfo.getName().equals(tableName)
             && tableInfo.getNamespace().getName().equals(namespaceName)) {
           tableId = tableInfo.getId().toStringUtf8();
@@ -114,21 +116,19 @@ public class YBCDCSourceConnector extends SourceConnector {
 
       for (List<LocatedTablet> locatedTablets : tabletsGrouped) {
         Map<String, String> taskProps = new HashMap<>(configProperties);
+        List<String> tabletHostList =
+            locatedTablets
+                .stream()
+                .map(
+                    t ->
+                        new String(t.getTabletId(), StandardCharsets.UTF_8)
+                            + " "
+                            + t.getLeaderReplica().getRpcHost()
+                            + ":"
+                            + t.getLeaderReplica().getRpcPort())
+                .collect(Collectors.toList());
 
-        ExpressionBuilder builder = dialect.expressionBuilder();
-        builder
-            .appendList()
-            .delimitedBy(",")
-            .of(
-                locatedTablets
-                    .stream()
-                    .map(
-                        t ->
-                            new String(t.getTabletId(), StandardCharsets.UTF_8)
-                                + " "
-                                + t.getLeaderReplica().getRpcHostPort().toString())
-                    .collect(Collectors.toList()));
-        taskProps.put(CDCSourceTaskConfig.TABLET_LOCATION_CONFIG, builder.toString());
+        taskProps.put(CDCSourceTaskConfig.TABLET_LOCATION_CONFIG, String.join(",", tabletHostList));
         taskProps.put(CDCSourceTaskConfig.STREAMID_CONFIG, streamId);
         taskProps.put(CDCSourceTaskConfig.TABLEID_CONFIG, table.getTableId());
         taskConfigs.add(taskProps);

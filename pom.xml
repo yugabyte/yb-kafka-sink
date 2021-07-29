@@ -38,7 +38,7 @@
   <version>1.4.1-SNAPSHOT</version>
   <name>YugabyteDB Kafka Sink Connector</name>
   <description>A Kafka Sink Connector for pulling data from Apache Kafka and inserting into YugabyteDB</description>
-  <url>https://github.com/riptano/kafka-sink</url>
+  <!--<url>https://github.com/riptano/kafka-sink</url>-->
   <inceptionYear>2018</inceptionYear>
   <organization>
     <name>YugabyteDB</name>
@@ -89,6 +89,9 @@
     <confluent.version>5.3.1</confluent.version>
     <avro.version>1.9.2</avro.version>
     <postgresql.version>42.2.12</postgresql.version>
+    <async.version>1.4.1</async.version>
+    <protobuf.version>3.5.1</protobuf.version>
+    <!--<guava.version>23.0</guava.version>-->
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -278,11 +281,31 @@
         <version>3.1.12</version>
       </dependency>
       <dependency>
+        <groupId>org.yb</groupId>
+        <artifactId>yb-client</artifactId>
+        <version>0.8.3-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresql.version}</version>
         <!--<scope>runtime</scope>-->
       </dependency>
+      <dependency>
+        <groupId>com.stumbleupon</groupId>
+        <artifactId>async</artifactId>
+        <version>${async.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.version}</version>
+      </dependency>
+      <!--<dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>-->
     </dependencies>
   </dependencyManagement>
   <build>
@@ -746,7 +769,7 @@ limitations under the License.]]></inlineHeader>
       </snapshots>
     </repository>
   </repositories>
-  <distributionManagement>
+  <!--<distributionManagement>
     <repository>
       <id>datastax-releases-local</id>
       <name>DataStax Local Releases</name>
@@ -757,7 +780,7 @@ limitations under the License.]]></inlineHeader>
       <name>DataStax Local Snapshots</name>
       <url>https://repo.sjc.dsinternal.org/artifactory/datastax-snapshots-local/</url>
     </snapshotRepository>
-  </distributionManagement>
+  </distributionManagement>-->
   <licenses>
     <license>
       <name>Apache 2</name>

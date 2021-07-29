@@ -58,17 +58,39 @@ public class CDCSourceConnectorConfig extends AbstractConfig {
   }
 
   private static final void addConnectorOptions(ConfigDef config) {
+    LOG.info("SKSK the conifgs are added.");
     int orderInGroup = 0;
-    config.define(
-        TABLE_NAME_CONFIG,
-        Type.LIST,
-        TABLE_NAME_DEFAULT,
-        Importance.HIGH,
-        TABLE_NAME_DOC,
-        CONNECTOR_GROUP,
-        ++orderInGroup,
-        Width.MEDIUM,
-        TABLE_NAME_DISPLAY);
+    config
+        .define(
+            TABLE_NAME_CONFIG,
+            Type.STRING,
+            TABLE_NAME_DEFAULT,
+            Importance.HIGH,
+            TABLE_NAME_DOC,
+            CONNECTOR_GROUP,
+            ++orderInGroup,
+            Width.MEDIUM,
+            TABLE_NAME_DISPLAY)
+        .define(
+            MASTER_ADDRESS_CONFIG,
+            Type.STRING,
+            MASTER_ADDRESS_DEFAULT,
+            Importance.LOW,
+            MASTER_ADDRESS_DOC,
+            CONNECTOR_GROUP,
+            ++orderInGroup,
+            Width.MEDIUM,
+            MASTER_ADDRESS_DISPLAY)
+        .define(
+            NAMESPACE_NAME_CONFIG,
+            Type.STRING,
+            NAMESPACE_NAME_DEFAULT,
+            Importance.LOW,
+            NAMESPACE_NAME_DOC,
+            CONNECTOR_GROUP,
+            ++orderInGroup,
+            Width.MEDIUM,
+            NAMESPACE_NAME_DISPLAY);
   }
 
   public static final ConfigDef CONFIG_DEF = baseConfigDef();

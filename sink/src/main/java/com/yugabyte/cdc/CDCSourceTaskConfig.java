@@ -34,7 +34,7 @@ public class CDCSourceTaskConfig extends CDCSourceConnectorConfig {
           .define(STREAMID_CONFIG, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, STREAMID_DOC)
           .define(
               TABLET_LOCATION_CONFIG,
-              ConfigDef.Type.CLASS,
+              ConfigDef.Type.LIST,
               ConfigDef.Importance.HIGH,
               TABLET_LOCATION_DOC);
 
