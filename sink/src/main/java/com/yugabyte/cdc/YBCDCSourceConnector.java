@@ -142,7 +142,7 @@ public class YBCDCSourceConnector extends SourceConnector {
   @Override
   public void stop() {
     log.info("Stopping table monitoring thread");
-    tableMonitorThread.shutdown();
+    /*tableMonitorThread.shutdown();
     try {
       tableMonitorThread.join(MAX_TIMEOUT);
     } catch (InterruptedException e) {
@@ -161,7 +161,7 @@ public class YBCDCSourceConnector extends SourceConnector {
           dialect = null;
         }
       }
-    }
+    }*/
   }
 
   @Override

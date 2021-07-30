@@ -10,6 +10,7 @@ import com.yugabyte.jdbc.source.SchemaMapping;
 import com.yugabyte.jdbc.util.Version;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -132,9 +133,12 @@ public class CDCSourceTask extends SourceTask {
             new Callback<Void, GetChangesResponse>() {
               @Override
               public Void call(GetChangesResponse getChangesResponse) throws Exception {
-                handlePoll(getChangesResponse, records);
-                latch.countDown();
-                log.info("latch countdown done.");
+                try {
+                  handlePoll(getChangesResponse, records);
+                } finally {
+                  latch.countDown();
+                  log.info("latch countdown done.");
+                }
                 return null;
               }
             });
@@ -249,16 +253,18 @@ public class CDCSourceTask extends SourceTask {
     // In case of exception deal with it and continue
     log.info("SK: handlePoll.");
 
+    final String topic = this.table.getName();
+    final Map<String, String> partition =
+        Collections.singletonMap("tablename", this.table.getName());
+    ;
+
     for (org.yb.cdc.CdcService.CDCRecord2PB record :
         getChangesResponse.getResp().getCDCRecordsList()) {
-
       if (record.getOperation().equals(CdcService.CDCRecord2PB.OperationType.DDL)) {
         // register the schema or save it locally
         log.info("The schema is " + record.getSchema());
         continue;
       }
-      String topic = table.getName();
-      Integer partition = 0;
 
       List<CdcService.KeyValuePairPB> primary_keys = record.getKeyList();
       List<CdcService.KeyValuePairPB> changes = record.getChangesList();
@@ -275,7 +281,6 @@ public class CDCSourceTask extends SourceTask {
       log.info("The keyValue is " + keyValue);
       log.info("The value is " + value);
 
-      log.info("The record is " + record.toString());
       try {
         log.info("Printing the json format of CDCRecord2PB " + JsonFormat.printer().print(record));
       } catch (InvalidProtocolBufferException ie) {
@@ -285,8 +290,11 @@ public class CDCSourceTask extends SourceTask {
           x -> {
             log.info("SKSK the source record key is " + x.getKey().toStringUtf8());
           });
+      recordList.add(
+          new SourceRecord(partition, null, topic, keySchema, keyValue, valueSchema, value));
     }
 
+    log.info("The record list is " + recordList);
     // convert and add to recordList
     this.term = getChangesResponse.getResp().getCheckpoint().getOpId().getTerm();
     this.index = getChangesResponse.getResp().getCheckpoint().getOpId().getIndex();
@@ -380,9 +388,7 @@ public class CDCSourceTask extends SourceTask {
             default:
               record.put(x.getKey().toStringUtf8(), null);
           }
-          log.info("SKSK the source record value is " + record);
         });
-
     return record;
   }
 
