@@ -264,18 +264,30 @@ public class CDCSourceTask extends SourceTask {
         log.info("The schema is " + record.getSchema());
         continue;
       }
+      if (record.getOperation().equals(CdcService.CDCRecord2PB.OperationType.WRITE)
+          && record.getTransactionState() != null
+          && record.getTransactionState().hasStatus()) {
+        // register the schema or save it locally
+        log.info("This is the commit transaction event. ignore it for now ");
+        continue;
+      }
 
       List<CdcService.KeyValuePairPB> primary_keys = record.getKeyList();
+
       List<CdcService.KeyValuePairPB> changes = record.getChangesList();
 
       Schema keySchema = buildSchema(primary_keys);
-      Schema valueSchema = buildSchema(changes);
+      Object keyValue = buildObject(primary_keys, keySchema);
+      Schema valueSchema = null;
 
       log.info("The keySchema is " + keySchema);
+      Object value = null;
+      if (!record.getOperation().equals(CdcService.CDCRecord2PB.OperationType.DELETE)) {
+        // register the schema or save it locally
+        valueSchema = buildSchema(changes);
+        value = buildObject(changes, valueSchema);
+      }
       log.info("The valueSchema is " + valueSchema);
-
-      Object keyValue = buildObject(primary_keys, keySchema);
-      Object value = buildObject(changes, valueSchema);
 
       log.info("The keyValue is " + keyValue);
       log.info("The value is " + value);
@@ -290,13 +302,6 @@ public class CDCSourceTask extends SourceTask {
             log.info("SKSK the source record key is " + x.getKey().toStringUtf8());
           });
 
-      if (record.getOperation().equals(CdcService.CDCRecord2PB.OperationType.WRITE)
-          && record.getTransactionState() != null
-          && record.getTransactionState().hasStatus()) {
-        // register the schema or save it locally
-        log.info("This is the commit transaction event. ignore it for now ");
-        continue;
-      }
       recordList.add(
           new SourceRecord(partition, null, topic, keySchema, keyValue, valueSchema, value));
     }
