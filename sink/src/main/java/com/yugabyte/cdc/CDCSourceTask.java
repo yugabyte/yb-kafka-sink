@@ -256,7 +256,6 @@ public class CDCSourceTask extends SourceTask {
     final String topic = this.table.getName();
     final Map<String, String> partition =
         Collections.singletonMap("tablename", this.table.getName());
-    ;
 
     for (org.yb.cdc.CdcService.CDCRecord2PB record :
         getChangesResponse.getResp().getCDCRecordsList()) {
@@ -290,6 +289,14 @@ public class CDCSourceTask extends SourceTask {
           x -> {
             log.info("SKSK the source record key is " + x.getKey().toStringUtf8());
           });
+
+      if (record.getOperation().equals(CdcService.CDCRecord2PB.OperationType.WRITE)
+          && record.getTransactionState() != null
+          && record.getTransactionState().hasStatus()) {
+        // register the schema or save it locally
+        log.info("This is the commit transaction event. ignore it for now ");
+        continue;
+      }
       recordList.add(
           new SourceRecord(partition, null, topic, keySchema, keyValue, valueSchema, value));
     }
