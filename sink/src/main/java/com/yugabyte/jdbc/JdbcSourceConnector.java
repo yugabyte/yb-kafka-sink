@@ -66,13 +66,15 @@ public class JdbcSourceConnector extends SourceConnector {
       throw new ConnectException(
           "Couldn't start JdbcSourceConnector due to configuration error", e);
     }
-
-    final String dbUrl = config.getString(JdbcSourceConnectorConfig.CONNECTION_URL_CONFIG);
+    final Optional<String> dbUrls =
+        Arrays.stream(config.getString(JdbcSourceConnectorConfig.CONNECTION_URLS_CONFIG).split(","))
+            .map(s -> s.trim())
+            .findFirst();
     final int maxConnectionAttempts =
         config.getInt(JdbcSourceConnectorConfig.CONNECTION_ATTEMPTS_CONFIG);
     final long connectionRetryBackoff =
         config.getLong(JdbcSourceConnectorConfig.CONNECTION_BACKOFF_CONFIG);
-    dialect = DatabaseDialects.findBestFor(dbUrl, config);
+    dialect = DatabaseDialects.findBestFor(dbUrls.get(), config);
     cachedConnectionProvider = connectionProvider(maxConnectionAttempts, connectionRetryBackoff);
 
     // Initial connection attempt
