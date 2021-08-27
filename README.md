@@ -1,10 +1,11 @@
 # YugabyteDB Apache Kafka Connector
 
-An Apache Kafka® sink for transferring events/messages from Kafka topics to YugabyteDB.
+An Apache Kafka® sink for transferring events/messages from Kafka topics to YugabyteDB. It supports both CQL as well as JDBC Sink.
 
 ## Documentation
 
-All documentation is available online [here](https://docs.datastax.com/en/kafka/doc/index.html).
+All documentation for cql Sink is available online [here](https://docs.datastax.com/en/kafka/doc/index.html).
+All documentation for jdbc Sink is available online [here](https://docs.confluent.io/kafka-connect-jdbc/current/sink-connector/sink_config_options.html).
 
 ## Building from the sources
 
