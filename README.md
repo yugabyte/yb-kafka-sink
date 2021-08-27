@@ -37,20 +37,21 @@ To do so please follow those steps:
    `yugabyte-sink-standalone.properties`.
 
 4. A sample sink config file would be something like
-       {
-              "name": "connect-avro",
-              "config": {
-                "connector.class": "com.datastax.oss.kafka.sink.CassandraSinkConnector",
-                "tasks.max": "12",
-                "maxNumberOfRecordsInBatch":"100",
-                "topics": "avro-stream",
-                "contactPoints": "<ip1>,<ip2>,<ip3>",
-                "loadBalancing.localDc": "us-west-2",
-                "topic.avro-stream.stocks.ticks.mapping": "name=key, symbol=value.symbol, ts=value.datetime, exchange=value.exchange, industry=value.industry, value=value.value",
-                "topic.avro-stream.stocks.ticks.consistencyLevel": "QUORUM"
-               }
-        }
-        
+ ```json
+ {
+    "name": "connect-avro",
+    "config": {
+    "connector.class": "com.datastax.oss.kafka.sink.CassandraSinkConnector",
+    "tasks.max": "12",
+    "maxNumberOfRecordsInBatch":"100",
+    "topics": "avro-stream",
+    "contactPoints": "<ip1>,<ip2>,<ip3>",
+    "loadBalancing.localDc": "us-west-2",
+    "topic.avro-stream.stocks.ticks.mapping": "name=key, symbol=value.symbol, ts=value.datetime, exchange=value.exchange, industry=value.industry, value=value.value",
+    "topic.avro-stream.stocks.ticks.consistencyLevel": "QUORUM"
+    }
+ }
+```
 5. Run connect-standalone and specify the path to the that config file:
 
        bin/connect-standalone.sh \
