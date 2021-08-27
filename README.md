@@ -37,21 +37,38 @@ To do so please follow those steps:
    meet your needs, or copy it out and edit elsewhere. The edited file should be named 
    `yugabyte-sink-standalone.properties`.
 
-4. A sample sink config file would be something like
+4. A sample sink config file for cql would be something like
  ```json
  {
-    "name": "connect-avro",
+    "name": "yb-cql-sink",
     "config": {
     "connector.class": "com.datastax.oss.kafka.sink.CassandraSinkConnector",
     "tasks.max": "12",
     "maxNumberOfRecordsInBatch":"100",
-    "topics": "avro-stream",
+    "topics": "ticks",
     "contactPoints": "<ip1>,<ip2>,<ip3>",
     "loadBalancing.localDc": "us-west-2",
     "topic.avro-stream.stocks.ticks.mapping": "name=key, symbol=value.symbol, ts=value.datetime, exchange=value.exchange, industry=value.industry, value=value.value",
     "topic.avro-stream.stocks.ticks.consistencyLevel": "QUORUM"
     }
  }
+```
+A sample sink config for sql would be something like
+```json
+{
+  "name": "yb-jdbc-sink",
+  "config": {
+    "connector.class": "com.yugabyte.jdbc.JdbcSinkConnector",
+    "tasks.max": "10",
+    "topics": "ticks",
+    "connection.urls":"jdbc:postgresql://localhost:5433/yugabyte",
+    "connection.user":"yugabyte",
+    "connection.password":"yugabyte",
+    "batch.size":"256",
+    "mode":"INSERT",
+    "auto.create":"true"
+  }
+}
 ```
 5. Run connect-standalone and specify the path to the that config file:
 
